@@ -21,6 +21,7 @@ package com.jfoenix.skins;
 
 import com.jfoenix.controls.JFXSpinner;
 import com.sun.javafx.scene.NodeHelper;
+import com.sun.javafx.scene.TreeShowingExpression;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -48,6 +49,7 @@ import javafx.util.Duration;
 public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
 
     private JFXSpinner control;
+    private TreeShowingExpression treeShowingExpression;
     private boolean isValid = false;
 
     private Color greenColor;
@@ -66,6 +68,7 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
         super(control);
 
         this.control = control;
+        this.treeShowingExpression = new TreeShowingExpression(control);
 
         blueColor = Color.valueOf("#4285f4");
         redColor = Color.valueOf("#db4437");
@@ -101,7 +104,7 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
         // register listeners
         registerChangeListener(control.indeterminateProperty(), obs -> initialize());
         registerChangeListener(control.progressProperty(), obs -> updateProgress());
-        registerChangeListener(NodeHelper.treeShowingProperty(control), obs->updateAnimation());
+        registerChangeListener(treeShowingExpression, obs -> updateAnimation());
         registerChangeListener(control.sceneProperty(), obs->updateAnimation());
     }
 
@@ -310,6 +313,7 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
     @Override
     public void dispose() {
         super.dispose();
+        treeShowingExpression.dispose();
         clearAnimation();
         arc = null;
         track = null;
