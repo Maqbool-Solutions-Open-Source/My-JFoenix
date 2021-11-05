@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.rationalityfrontline.workaround"
-version = "17.0.0"
+version = "17.0.1"
 val NAME = project.name
 val DESC = "JavaFX Material Design Library"
 val GITHUB_REPO = "RationalityFrontline/JFoenix"
@@ -16,11 +16,15 @@ repositories {
 }
 
 javafx {
-    version = "17"
+    version = "17.0.1"
     modules = listOf("javafx.controls", "javafx.fxml")
+    configuration = "compileOnly"
 }
 
 tasks {
+    withType(JavaCompile::class.java) {
+        options.release.set(11)
+    }
     compileJava {
         options.compilerArgs = listOf(
             "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
