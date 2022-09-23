@@ -94,6 +94,7 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
         fillRect = new Rectangle();
         fillRect.setFill(Color.TRANSPARENT);
         text = new Text();
+        text.setStyle("-fx-font-size:null");
         text.getStyleClass().setAll("text", "percentage");
         final Group group = new Group(fillRect, track, arc, text);
         group.setManaged(false);
