@@ -172,12 +172,16 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
         }
     }
 
+    private double computeSize() {
+        return control.getRadius() * 2 + arc.getStrokeWidth() * 2;
+    }
+
     @Override
     protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
         if (Region.USE_COMPUTED_SIZE == control.getRadius()) {
             return super.computeMaxHeight(width, topInset, rightInset, bottomInset, leftInset);
         } else {
-            return control.getRadius() * 2 + arc.getStrokeWidth() * 2;
+            return computeSize();
         }
     }
 
@@ -186,18 +190,26 @@ public class JFXSpinnerSkin extends SkinBase<JFXSpinner> {
         if (Region.USE_COMPUTED_SIZE == control.getRadius()) {
             return super.computeMaxHeight(height, topInset, rightInset, bottomInset, leftInset);
         } else {
-            return control.getRadius() * 2 + arc.getStrokeWidth() * 2;
+            return computeSize();
         }
     }
 
     @Override
     protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-        return arcPane.prefWidth(-1);
+        if (Region.USE_COMPUTED_SIZE == control.getRadius()) {
+            return arcPane.prefWidth(-1);
+        } else {
+            return computeSize();
+        }
     }
 
     @Override
     protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
-        return arcPane.prefHeight(-1);
+        if (Region.USE_COMPUTED_SIZE == control.getRadius()) {
+            return arcPane.prefHeight(-1);
+        } else {
+            return computeSize();
+        }
     }
 
     /**
