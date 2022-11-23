@@ -2,11 +2,11 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("org.openjfx.javafxplugin") version "0.0.10"
+    id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
 group = "org.rationalityfrontline.workaround"
-version = "17.0.5"
+version = "19.0.0"
 val NAME = project.name
 val DESC = "JavaFX Material Design Library"
 val GITHUB_REPO = "RationalityFrontline/JFoenix"
@@ -16,7 +16,7 @@ repositories {
 }
 
 javafx {
-    version = "17.0.2"
+    version = "19"
     modules = listOf("javafx.controls", "javafx.fxml")
     configuration = "compileOnly"
 }
