@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.rationalityfrontline.workaround"
-version = "19.0.0"
+version = "19.0.1"
 val NAME = project.name
 val DESC = "JavaFX Material Design Library"
 val GITHUB_REPO = "RationalityFrontline/JFoenix"
