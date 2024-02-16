@@ -1,6 +1,7 @@
 plugins {
     application
-    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.openjfx.javafxplugin") version "0.1.0"
+    id("org.javamodularity.moduleplugin") version "1.8.12"
 }
 
 application {
@@ -36,6 +37,6 @@ dependencies {
 }
 
 javafx {
-    version = "19"
+    version = "21.0.2"
     modules = listOf("javafx.controls", "javafx.fxml")
 }
