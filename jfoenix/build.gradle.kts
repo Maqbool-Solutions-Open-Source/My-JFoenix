@@ -2,11 +2,11 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("org.openjfx.javafxplugin") version "0.0.10"
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 group = "org.rationalityfrontline.workaround"
-version = "17.0.5"
+version = "17.0.6"
 val NAME = project.name
 val DESC = "JavaFX Material Design Library"
 val GITHUB_REPO = "RationalityFrontline/JFoenix"
@@ -16,7 +16,7 @@ repositories {
 }
 
 javafx {
-    version = "17.0.2"
+    version = "17.0.]17"
     modules = listOf("javafx.controls", "javafx.fxml")
     configuration = "compileOnly"
 }
@@ -44,19 +44,21 @@ tasks {
         options {
             this as StandardJavadocDocletOptions
             addStringOption("Xdoclint:none", "-quiet")
-            addMultilineStringsOption("-add-exports").setValue(listOf(
-                "javafx.base/com.sun.javafx.event=com.jfoenix",
-                "javafx.base/com.sun.javafx.binding=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.scene.text=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.geom=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.util=com.jfoenix",
-                "javafx.graphics/com.sun.javafx.scene.traversal=com.jfoenix",
-                "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
-                "javafx.controls/com.sun.javafx.scene.control.inputmap=com.jfoenix",
-                "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
-            ))
+            addMultilineStringsOption("-add-exports").setValue(
+                listOf(
+                    "javafx.base/com.sun.javafx.event=com.jfoenix",
+                    "javafx.base/com.sun.javafx.binding=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.scene.text=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.geom=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.util=com.jfoenix",
+                    "javafx.graphics/com.sun.javafx.scene.traversal=com.jfoenix",
+                    "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
+                    "javafx.controls/com.sun.javafx.scene.control.inputmap=com.jfoenix",
+                    "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
+                )
+            )
         }
     }
 }
@@ -115,6 +117,6 @@ publishing {
     }
 }
 
-signing {
-    sign(publishing.publications["maven"])
-}
+//signing {
+//    sign(publishing.publications["maven"])
+//}
