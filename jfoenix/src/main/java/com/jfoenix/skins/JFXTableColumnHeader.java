@@ -19,6 +19,8 @@
 
 package com.jfoenix.skins;
 
+import javafx.scene.control.skin.TableColumnHeader;
+import javafx.scene.control.skin.TableViewSkinBase;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -30,8 +32,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumnBase;
-import javafx.scene.control.skin.TableColumnHeader;
-import javafx.scene.control.skin.TableViewSkinBase;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -52,8 +52,8 @@ public class JFXTableColumnHeader extends TableColumnHeader {
 //    private boolean invalid = true;
 //    private Insets oldMargin = null;
 
-    public JFXTableColumnHeader(TableColumnBase tc) {
-        super(tc);
+    public JFXTableColumnHeader(TableViewSkinBase skin, TableColumnBase tc) {
+        super(skin, tc);
     }
 
     @Override

@@ -25,6 +25,8 @@ import com.jfoenix.controls.JFXRippler.RipplerMask;
 import com.jfoenix.transitions.CachedTransition;
 import com.jfoenix.transitions.JFXFillTransition;
 import com.jfoenix.utils.JFXNodeUtils;
+import com.sun.javafx.scene.control.behavior.ButtonBehavior;
+import com.sun.javafx.scene.control.skin.LabeledSkinBase;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -36,7 +38,6 @@ import javafx.geometry.NodeOrientation;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.skin.CheckBoxSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -57,7 +58,7 @@ import javafx.util.Duration;
  * @version 1.0
  * @since 2016-09-06
  */
-public class JFXCheckBoxSkin extends CheckBoxSkin {
+public class JFXCheckBoxSkin extends LabeledSkinBase<JFXCheckBox, ButtonBehavior<JFXCheckBox>> {
 
     private final StackPane box = new StackPane();
     private final StackPane mark = new StackPane();
@@ -72,7 +73,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
     private final StackPane boxContainer;
 
     public JFXCheckBoxSkin(JFXCheckBox control) {
-        super(control);
+        super(control, new ButtonBehavior<>(control));
 
         indeterminateMark.getStyleClass().setAll("indeterminate-mark");
         indeterminateMark.setOpacity(0);
@@ -129,23 +130,31 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
         indeterminateTransition = new CheckBoxTransition(indeterminateMark);
         createFillTransition();
 
-        registerChangeListener(control.checkedColorProperty(), obs -> {
-            select.stop();
-            createFillTransition();
-            updateColors();
-        });
-        registerChangeListener(control.unCheckedColorProperty(), obs -> updateColors());
+        registerChangeListener(control.checkedColorProperty(), "CHECKED_COLOR");
+        registerChangeListener(control.unCheckedColorProperty(), "UNCHECKED_COLOR");
     }
 
     private void updateRippleColor() {
         rippler.setRipplerFill(getSkinnable().isSelected() ?
-            ((JFXCheckBox) getSkinnable()).getCheckedColor() : ((JFXCheckBox) getSkinnable()).getUnCheckedColor());
+            getSkinnable().getCheckedColor() : getSkinnable().getUnCheckedColor());
+    }
+
+    @Override
+    protected void handleControlPropertyChanged(String p) {
+        super.handleControlPropertyChanged(p);
+        if ("CHECKED_COLOR".equals(p)) {
+            select.stop();
+            createFillTransition();
+            updateColors();
+        } else if ("UNCHECKED_COLOR".equals(p)) {
+            updateColors();
+        }
     }
 
     private void updateColors() {
-        final Paint color = getSkinnable().isSelected() ? ((JFXCheckBox) getSkinnable()).getCheckedColor() : ((JFXCheckBox) getSkinnable()).getUnCheckedColor();
-        JFXNodeUtils.updateBackground(indeterminateMark.getBackground(), indeterminateMark, ((JFXCheckBox) getSkinnable()).getCheckedColor());
-        JFXNodeUtils.updateBackground(box.getBackground(), box, getSkinnable().isSelected() ? ((JFXCheckBox) getSkinnable()).getCheckedColor() : Color.TRANSPARENT);
+        final Paint color = getSkinnable().isSelected() ? getSkinnable().getCheckedColor() : getSkinnable().getUnCheckedColor();
+        JFXNodeUtils.updateBackground(indeterminateMark.getBackground(), indeterminateMark, getSkinnable().getCheckedColor());
+        JFXNodeUtils.updateBackground(box.getBackground(), box, getSkinnable().isSelected() ? getSkinnable().getCheckedColor() : Color.TRANSPARENT);
         rippler.setRipplerFill(color);
         final BorderStroke borderStroke = box.getBorder().getStrokes().get(0);
         box.setBorder(new Border(new BorderStroke(color,
@@ -154,9 +163,9 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
             borderStroke.getWidths())));
     }
 
+    @Override
     protected void updateChildren() {
         super.updateChildren();
-        getChildren().removeIf(node -> node.getStyleClass().contains("box"));
         if (rippler != null) {
             getChildren().add(rippler);
         }
@@ -164,7 +173,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
 
     @Override
     protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-        return super.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset)
+        return super.computeMinWidth(height, topInset, rightInset, bottomInset, leftInset)
                + snapSize(box.minWidth(-1)) + getLabelOffset();
     }
 
@@ -266,7 +275,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
                 mark.setScaleY(1);
                 mark.setScaleX(1);
                 mark.setOpacity(1);
-                box.setBackground(new Background(new BackgroundFill(((JFXCheckBox) getSkinnable()).getCheckedColor(), radii, insets)));
+                box.setBackground(new Background(new BackgroundFill(getSkinnable().getCheckedColor(), radii, insets)));
                 select.playFrom(select.getCycleDuration());
                 transition.playFrom(transition.getCycleDuration());
             } else {
@@ -278,7 +287,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
                 transition.playFrom(Duration.ZERO);
             }
         }
-        box.setBorder(new Border(new BorderStroke(selection ? ((JFXCheckBox) getSkinnable()).getCheckedColor() : ((JFXCheckBox) getSkinnable()).getUnCheckedColor(),
+        box.setBorder(new Border(new BorderStroke(selection ? getSkinnable().getCheckedColor() : getSkinnable().getUnCheckedColor(),
             BorderStrokeStyle.SOLID,
             new CornerRadii(2),
             new BorderWidths(2))));
@@ -300,7 +309,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
                 indeterminateMark.setOpacity(1);
                 indeterminateMark.setScaleY(1);
                 indeterminateMark.setScaleX(1);
-                indeterminateMark.setBackground(new Background(new BackgroundFill(((JFXCheckBox) getSkinnable()).getCheckedColor(), radii, insets)));
+                indeterminateMark.setBackground(new Background(new BackgroundFill(getSkinnable().getCheckedColor(), radii, insets)));
                 indeterminateTransition.playFrom(indeterminateTransition.getCycleDuration());
             } else {
                 indeterminateMark.setOpacity(0);
@@ -319,7 +328,7 @@ public class JFXCheckBoxSkin extends CheckBoxSkin {
         select = new JFXFillTransition(Duration.millis(120),
             box,
             Color.TRANSPARENT,
-            (Color) ((JFXCheckBox) getSkinnable()).getCheckedColor());
+            (Color) getSkinnable().getCheckedColor());
         select.setInterpolator(Interpolator.EASE_OUT);
     }
 

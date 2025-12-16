@@ -21,11 +21,11 @@ package com.jfoenix.controls;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.skins.JFXTabPaneSkin;
+import javafx.css.converter.BooleanConverter;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableBooleanProperty;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
-import javafx.css.converter.BooleanConverter;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;

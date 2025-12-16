@@ -27,8 +27,9 @@ import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.effects.JFXDepthManager;
 import com.jfoenix.svg.SVGGlyph;
 import com.jfoenix.transitions.CachedTransition;
-import com.sun.javafx.scene.control.LambdaMultiplePropertyChangeListenerHandler;
+import com.sun.javafx.scene.control.MultiplePropertyChangeListenerHandler;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import javafx.animation.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
@@ -65,7 +66,7 @@ import java.util.List;
  *
  * @author Shadi Shaheen
  */
-public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
+public class JFXTabPaneSkin extends BehaviorSkinBase<TabPane, TabPaneBehavior> {
 
     private HeaderContainer header;
     private ObservableList<TabContentHolder> tabContentHolders;
@@ -79,11 +80,9 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
     private static final int SPACER = 10;
     private double maxWidth = 0.0d;
     private double maxHeight = 0.0d;
-    private final TabPaneBehavior behavior;
 
-    public JFXTabPaneSkin(JFXTabPane tabPane) {
-        super(tabPane);
-        behavior = new TabPaneBehavior(tabPane);
+    public JFXTabPaneSkin(TabPane tabPane) {
+        super(tabPane, new TabPaneBehavior(tabPane));
         tabContentHolders = FXCollections.observableArrayList();
         header = new HeaderContainer();
         getChildren().add(JFXDepthManager.createMaterialNode(header, 1));
@@ -172,18 +171,24 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
             getSkinnable().requestLayout();
         });
 
-        registerChangeListener(tabPane.getSelectionModel().selectedItemProperty(), obs->{
+        registerChangeListener(tabPane.getSelectionModel().selectedItemProperty(), "SELECTED_TAB");
+        registerChangeListener(tabPane.widthProperty(), "WIDTH");
+        registerChangeListener(tabPane.heightProperty(), "HEIGHT");
+
+    }
+
+    @Override
+    protected void handleControlPropertyChanged(String property) {
+        super.handleControlPropertyChanged(property);
+        if ("SELECTED_TAB".equals(property)) {
             isSelectingTab = true;
             selectedTab = getSkinnable().getSelectionModel().getSelectedItem();
             getSkinnable().requestLayout();
-        });
-        registerChangeListener(tabPane.widthProperty(), obs->{
+        } else if ("WIDTH".equals(property)) {
             clip.setWidth(getSkinnable().getWidth());
-        });
-        registerChangeListener(tabPane.heightProperty(), obs->{
+        } else if ("HEIGHT".equals(property)) {
             clip.setHeight(getSkinnable().getHeight());
-        });
-
+        }
     }
 
     private boolean removedTabs = false;
@@ -894,8 +899,11 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
         private JFXRippler rippler;
         private boolean isClosing = false;
 
-        private final LambdaMultiplePropertyChangeListenerHandler listener =
-            new LambdaMultiplePropertyChangeListenerHandler();
+        private final MultiplePropertyChangeListenerHandler listener =
+            new MultiplePropertyChangeListenerHandler(param -> {
+                handlePropertyChanged(param);
+                return null;
+            });
 
         private final ListChangeListener<String> styleClassListener =
             (Change<? extends String> change) -> getStyleClass().setAll(tab.getStyleClass());
@@ -916,6 +924,7 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
             closeButton = new JFXButton(null, new SVGGlyph());
             closeButton.getStyleClass().add("tab-close-button");
             closeButton.setOnAction(action->{
+                TabPaneBehavior behavior = getBehavior();
                 if (behavior.canCloseTab(tab)) {
                     behavior.closeTab(tab);
                     setOnMouseClicked(null);
@@ -937,43 +946,19 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
                 oldTooltip = tooltip;
             }
 
-            listener.registerChangeListener(tab.selectedProperty(), obs->{
-                pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, tab.isSelected());
-                updateInnerUI();
-            });
-            listener.registerChangeListener(tab.textProperty(), obs-> tabLabel.setText(tab.getText()));
-            listener.registerChangeListener(tab.graphicProperty(), obs-> tabLabel.setGraphic(tab.getGraphic()));
-            listener.registerChangeListener(widthProperty(), obs-> header.updateSelectionLine(true));
-            listener.registerChangeListener(tab.tooltipProperty(), obs->{
-                // install new Toolip/ uninstall the old one
-                if (oldTooltip != null) {
-                    Tooltip.uninstall(this, oldTooltip);
-                }
-                tooltip = tab.getTooltip();
-                if (tooltip != null) {
-                    Tooltip.install(this, tooltip);
-                    oldTooltip = tooltip;
-                }
-            });
-            listener.registerChangeListener(tab.disableProperty(), obs->{
-                pseudoClassStateChanged(DISABLED_PSEUDOCLASS_STATE, tab.isDisable());
-                updateInnerUI();
-            });
-            listener.registerChangeListener(tab.styleProperty(), obs-> setStyle(tab.getStyle()));
-            listener.registerChangeListener(getSkinnable().tabMinWidthProperty(), obs-> updateSkinnableUI());
-            listener.registerChangeListener(getSkinnable().tabMaxWidthProperty(), obs-> updateSkinnableUI());
-            listener.registerChangeListener(getSkinnable().tabMinHeightProperty(), obs-> updateSkinnableUI());
-            listener.registerChangeListener(getSkinnable().tabMaxHeightProperty(), obs-> updateSkinnableUI());
-            listener.registerChangeListener(getSkinnable().sideProperty(), obs->{
-                final Side side = getSkinnable().getSide();
-                pseudoClassStateChanged(TOP_PSEUDOCLASS_STATE, (side == Side.TOP));
-                pseudoClassStateChanged(RIGHT_PSEUDOCLASS_STATE, (side == Side.RIGHT));
-                pseudoClassStateChanged(BOTTOM_PSEUDOCLASS_STATE, (side == Side.BOTTOM));
-                pseudoClassStateChanged(LEFT_PSEUDOCLASS_STATE, (side == Side.LEFT));
-                inner.setRotate(side == Side.BOTTOM ? 180.0F : 0.0F);
-            });
-            listener.registerChangeListener(getSkinnable().tabClosingPolicyProperty(), obs->updateInnerUI());
-
+            listener.registerChangeListener(tab.selectedProperty(), "SELECTED");
+            listener.registerChangeListener(tab.textProperty(), "TEXT");
+            listener.registerChangeListener(tab.graphicProperty(), "GRAPHIC");
+            listener.registerChangeListener(tab.tooltipProperty(), "TOOLTIP");
+            listener.registerChangeListener(tab.disableProperty(), "DISABLE");
+            listener.registerChangeListener(tab.styleProperty(), "STYLE");
+            listener.registerChangeListener(getSkinnable().tabClosingPolicyProperty(), "TAB_CLOSING_POLICY");
+            listener.registerChangeListener(getSkinnable().tabMinWidthProperty(), "TAB_MIN_WIDTH");
+            listener.registerChangeListener(getSkinnable().tabMaxWidthProperty(), "TAB_MAX_WIDTH");
+            listener.registerChangeListener(getSkinnable().tabMinHeightProperty(), "TAB_MIN_HEIGHT");
+            listener.registerChangeListener(getSkinnable().tabMaxHeightProperty(), "TAB_MAX_HEIGHT");
+            listener.registerChangeListener(getSkinnable().sideProperty(), "SIDE");
+            listener.registerChangeListener(widthProperty(), "WIDTH");
             tab.getStyleClass().addListener(weakStyleClassListener);
 
             getProperties().put(Tab.class, tab);
@@ -984,6 +969,7 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
                 }
                 if (event.getButton() == MouseButton.MIDDLE) {
                     if (showCloseButton()) {
+                        TabPaneBehavior behavior = getBehavior();
                         if (behavior.canCloseTab(tab)) {
                             removeListeners();
                             behavior.closeTab(tab);
@@ -991,7 +977,7 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
                     }
                 }else if (event.getButton() == MouseButton.PRIMARY) {
                     setOpacity(1);
-                    behavior.selectTab(tab);
+                    getBehavior().selectTab(tab);
                 }
             });
 
@@ -1014,6 +1000,51 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
             pseudoClassStateChanged(CLOSABLE, showCloseButton());
         }
 
+        private void handlePropertyChanged(final String p) {
+            if ("SELECTED".equals(p)) {
+                pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, tab.isSelected());
+               updateInnerUI();
+            } else if ("TEXT".equals(p)) {
+                tabLabel.setText(tab.getText());
+            } else if ("GRAPHIC".equals(p)) {
+                tabLabel.setGraphic(tab.getGraphic());
+            } else if ("TOOLTIP".equals(p)) {
+                // install new Toolip/ uninstall the old one
+                if (oldTooltip != null) {
+                    Tooltip.uninstall(this, oldTooltip);
+                }
+                tooltip = tab.getTooltip();
+                if (tooltip != null) {
+                    Tooltip.install(this, tooltip);
+                    oldTooltip = tooltip;
+                }
+            } else if ("DISABLE".equals(p)) {
+                pseudoClassStateChanged(DISABLED_PSEUDOCLASS_STATE, tab.isDisable());
+                updateInnerUI();
+            } else if ("STYLE".equals(p)) {
+                setStyle(tab.getStyle());
+            }  else if ("TAB_CLOSING_POLICY".equals(p)) {
+               updateInnerUI();
+            } else if ("TAB_MIN_WIDTH".equals(p)) {
+                updateSkinnableUI();
+            } else if ("TAB_MAX_WIDTH".equals(p)) {
+                updateSkinnableUI();
+            } else if ("TAB_MIN_HEIGHT".equals(p)) {
+                updateSkinnableUI();
+            } else if ("TAB_MAX_HEIGHT".equals(p)) {
+                updateSkinnableUI();
+            } else if ("SIDE".equals(p)) {
+                final Side side = getSkinnable().getSide();
+                pseudoClassStateChanged(TOP_PSEUDOCLASS_STATE, (side == Side.TOP));
+                pseudoClassStateChanged(RIGHT_PSEUDOCLASS_STATE, (side == Side.RIGHT));
+                pseudoClassStateChanged(BOTTOM_PSEUDOCLASS_STATE, (side == Side.BOTTOM));
+                pseudoClassStateChanged(LEFT_PSEUDOCLASS_STATE, (side == Side.LEFT));
+                inner.setRotate(side == Side.BOTTOM ? 180.0F : 0.0F);
+            } else if ("WIDTH".equals(p)) {
+                header.updateSelectionLine(true);
+            }
+        }
+
         private void updateInnerUI(){
             inner.requestLayout();
             requestLayout();
@@ -1025,10 +1056,9 @@ public class JFXTabPaneSkin extends SkinBase<JFXTabPane> {
         }
 
         private boolean showCloseButton() {
-            return tab.isClosable() &&
-                   (getSkinnable().getTabClosingPolicy().equals(TabPane.TabClosingPolicy.ALL_TABS));
-//                   ||
-//                    getSkinnable().getTabClosingPolicy().equals(TabPane.TabClosingPolicy.SELECTED_TAB) && tab.isSelected());
+            boolean allTabsPolicy = getSkinnable().getTabClosingPolicy().equals(TabPane.TabClosingPolicy.ALL_TABS);
+            boolean selectedTabPolicy = getSkinnable().getTabClosingPolicy().equals(TabPane.TabClosingPolicy.SELECTED_TAB) && tab.isSelected();
+            return (tab.isClosable() && (allTabsPolicy || selectedTabPolicy));
         }
 
         private void removeListeners() {

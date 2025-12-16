@@ -21,13 +21,14 @@ package com.jfoenix.skins;
 
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.utils.JFXNodeUtils;
-import com.sun.javafx.scene.NodeHelper;
-import com.sun.javafx.scene.TreeShowingExpression;
-import javafx.animation.*;
+import javafx.scene.control.skin.ProgressIndicatorSkin;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.skin.ProgressIndicatorSkin;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -46,38 +47,23 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
     private StackPane bar;
     private double barWidth = 0;
     private double secondaryBarWidth = 0;
-    private Animation indeterminateTransition;
+
     private Region clip;
-    private TreeShowingExpression treeShowingExpression;
 
     public JFXProgressBarSkin(JFXProgressBar bar) {
         super(bar);
-
-        this.treeShowingExpression = new TreeShowingExpression(bar);
-
         bar.widthProperty().addListener(observable -> {
             updateProgress();
             updateSecondaryProgress();
         });
-
-        registerChangeListener(bar.progressProperty(), (obs) -> updateProgress());
-        registerChangeListener(bar.secondaryProgressProperty(), obs-> updateSecondaryProgress());
-        registerChangeListener(bar.visibleProperty(), obs->updateAnimation());
-        registerChangeListener(bar.parentProperty(), obs->updateAnimation());
-        registerChangeListener(bar.sceneProperty(), obs->updateAnimation());
-
-        unregisterChangeListeners(treeShowingExpression);
-        unregisterChangeListeners(bar.indeterminateProperty());
-
-        registerChangeListener(treeShowingExpression, obs -> this.updateAnimation());
-        registerChangeListener(bar.indeterminateProperty(), obs->initialize());
-
-        initialize();
-
+        registerChangeListener(bar.secondaryProgressProperty(), "SECONDARY_PROGRESS");
+        registerChangeListener(bar.visibleProperty(), "VISIBLE");
+        registerChangeListener(bar.parentProperty(), "PARENT");
+        registerChangeListener(bar.sceneProperty(), "SCENE");
         getSkinnable().requestLayout();
     }
 
-    protected void initialize() {
+    public void initialize() {
 
         track = new StackPane();
         track.getStyleClass().setAll("track");
@@ -93,6 +79,20 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
         bar.backgroundProperty().addListener(observable -> JFXNodeUtils.updateBackground(bar.getBackground(), clip));
 
         getChildren().setAll(track, secondaryBar, bar);
+    }
+
+    @Override
+    protected void handleControlPropertyChanged(String p) {
+        super.handleControlPropertyChanged(p);
+        if ("SECONDARY_PROGRESS".equals(p)) {
+            updateSecondaryProgress();
+        } else if ("VISIBLE".equals(p)) {
+            updateAnimation();
+        } else if ("PARENT".equals(p)) {
+            updateAnimation();
+        } else if ("SCENE".equals(p)) {
+            updateAnimation();
+        }
     }
 
     @Override
@@ -129,7 +129,7 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
 
         if (getSkinnable().isIndeterminate()) {
             createIndeterminateTimeline();
-            if (NodeHelper.isTreeShowing(getSkinnable())) {
+            if (getSkinnable().impl_isTreeVisible()) {
                 indeterminateTransition.play();
             }
             // apply clip
@@ -150,6 +150,7 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
 
     boolean wasIndeterminate = false;
 
+    @Override
     protected void pauseTimeline(boolean pause) {
         if (getSkinnable().isIndeterminate()) {
             if (indeterminateTransition == null) {
@@ -163,7 +164,8 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
         }
     }
 
-    private void updateAnimation() {
+    @Override
+    protected void updateAnimation() {
         ProgressIndicator control = getSkinnable();
         final boolean isTreeVisible = control.isVisible() &&
                                       control.getParent() != null &&
@@ -175,7 +177,8 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
         }
     }
 
-    private void updateProgress() {
+    @Override
+    protected void updateProgress() {
         final ProgressIndicator control = getSkinnable();
         final boolean isIndeterminate = control.isIndeterminate();
         if (!(isIndeterminate && wasIndeterminate)) {
@@ -186,7 +189,8 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
         wasIndeterminate = isIndeterminate;
     }
 
-    private void createIndeterminateTimeline() {
+    @Override
+    protected void createIndeterminateTimeline() {
         if (indeterminateTransition != null) {
             clearAnimation();
         }
@@ -222,7 +226,7 @@ public class JFXProgressBarSkin extends ProgressIndicatorSkin {
     @Override
     public void dispose() {
         super.dispose();
-        treeShowingExpression.dispose();
+
         if (indeterminateTransition != null) {
             clearAnimation();
         }

@@ -80,6 +80,7 @@ class JFXCustomColorPicker extends Pane {
         hslColorPicker.setLayoutX(centerX - distance / 2);
         hslColorPicker.setLayoutY(centerY - distance / 2);
         this.getChildren().add(hslColorPicker);
+
         // add recent colors shapes
         final int shapesStartIndex = this.getChildren().size();
         final int shapesEndIndex = shapesStartIndex + shapesNumber;
@@ -96,11 +97,7 @@ class JFXCustomColorPicker extends Pane {
             path.getTransforms().add(rotate);
             this.getChildren().add(shapesStartIndex, path);
             path.setFill(Color.valueOf(getDefaultColor(i)));
-            path.setFocusTraversable(true);
-            path.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> {
-                path.requestFocus();
-                selectedPath.set(path);
-            });
+            path.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> selectedPath.set(path));
         }
 
         // add selection listeners

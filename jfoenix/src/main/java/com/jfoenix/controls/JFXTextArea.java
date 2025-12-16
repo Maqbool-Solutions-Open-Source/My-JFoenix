@@ -23,11 +23,11 @@ import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.base.IFXLabelFloatControl;
 import com.jfoenix.skins.JFXTextAreaSkin;
 import com.jfoenix.validation.base.ValidatorBase;
+import javafx.css.converter.BooleanConverter;
+import javafx.css.converter.PaintConverter;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.css.*;
-import javafx.css.converter.BooleanConverter;
-import javafx.css.converter.PaintConverter;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
@@ -71,7 +71,7 @@ public class JFXTextArea extends TextArea implements IFXLabelFloatControl {
 
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
-        if ("dalvik".equals(System.getProperty("java.vm.name").toLowerCase())) {
+        if ("Substrate VM".equals(System.getProperty("java.vm.name").toLowerCase())) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextAreaSkinAndroid\";");
         }
     }

@@ -606,7 +606,6 @@ public class JFXDecorator extends VBox {
      * @param text
      * @deprecated Use {@link JFXDecorator#setTitle(java.lang.String)} instead.
      */
-    @Deprecated
     public void setText(String text) {
         setTitle(text);
     }
@@ -616,7 +615,6 @@ public class JFXDecorator extends VBox {
      *
      * @deprecated Use {@link JFXDecorator#setTitle(java.lang.String)} instead.
      */
-    @Deprecated
     public String getText() {
         return getTitle();
     }

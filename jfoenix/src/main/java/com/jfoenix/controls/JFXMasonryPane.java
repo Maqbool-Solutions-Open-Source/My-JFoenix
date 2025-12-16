@@ -78,7 +78,7 @@ public class JFXMasonryPane extends Pane {
             dirtyBoxes = true;
 
             // clean removed child nodes from animationMap
-            // fixed #1003 JFXMasonryPane nullpointer when init before layout. 
+            // fixed #1003 JFXMasonryPane nullpointer when init before layout.
             if (animationMap != null) {
                 for (Node removedNode : change.getRemoved()) {
                     animationMap.remove(removedNode);

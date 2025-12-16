@@ -16,7 +16,7 @@ repositories {
 }
 
 javafx {
-    version = "17.0.]17"
+    version = "17.0.17"
     modules = listOf("javafx.controls", "javafx.fxml")
     configuration = "compileOnly"
 }

@@ -144,24 +144,24 @@ public class JFXChipView<T> extends Control {
     public void setSelectionHandler(Function<T, T> selectionHandler) {
         selectionHandlerProperty().set(selectionHandler);
     }
-    
-    
+
+
     /**
      * The prompt text to display in the TextArea.
      */
     private StringProperty promptText = new SimpleStringProperty(this, "promptText", "");
-    
-    public final StringProperty promptTextProperty() { 
-        return promptText; 
+
+    public final StringProperty promptTextProperty() {
+        return promptText;
     }
-    
-    public final String getPromptText() { 
-        return promptText.get(); 
+
+    public final String getPromptText() {
+        return promptText.get();
     }
-    
-    public final void setPromptText(String value) { 
-        promptText.set(value); 
-    }    
+
+    public final void setPromptText(String value) {
+        promptText.set(value);
+    }
 
 
     private JFXAutoCompletePopup<T> autoCompletePopup = new JFXChipViewSkin.ChipsAutoComplete<T>();

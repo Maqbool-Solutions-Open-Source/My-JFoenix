@@ -21,11 +21,11 @@ package com.jfoenix.controls;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.skins.JFXToggleNodeSkin;
+import javafx.css.converter.BooleanConverter;
+import javafx.css.converter.ColorConverter;
 import javafx.beans.DefaultProperty;
 import javafx.css.*;
-import javafx.css.converter.BooleanConverter;
 import javafx.scene.Node;
-import javafx.css.converter.ColorConverter;
 import javafx.scene.control.Skin;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;

@@ -21,9 +21,9 @@ package com.jfoenix.controls;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.skins.JFXToggleButtonSkin;
-import javafx.css.*;
 import javafx.css.converter.BooleanConverter;
 import javafx.css.converter.PaintConverter;
+import javafx.css.*;
 import javafx.scene.control.Skin;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;

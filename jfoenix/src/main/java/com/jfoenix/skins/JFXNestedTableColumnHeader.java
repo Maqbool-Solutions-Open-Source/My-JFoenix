@@ -19,25 +19,27 @@
 
 package com.jfoenix.skins;
 
-import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.skin.NestedTableColumnHeader;
 import javafx.scene.control.skin.TableColumnHeader;
+import javafx.scene.control.skin.TableViewSkinBase;
+import javafx.scene.control.TableColumnBase;
 
 /**
  * @author Shadi Shaheen
  */
 public class JFXNestedTableColumnHeader extends NestedTableColumnHeader {
 
-    public JFXNestedTableColumnHeader(TableColumnBase tc) {
-        super(tc);
+
+    public JFXNestedTableColumnHeader(TableViewSkinBase skin, TableColumnBase tc) {
+        super(skin, tc);
     }
 
     // protected to allow subclasses to customise the column header types
     protected TableColumnHeader createTableColumnHeader(TableColumnBase col) {
-        return col != null
-               && !col.getColumns().isEmpty()
-               && col != this.getTableColumn() ?
-            new NestedTableColumnHeader(col) : new JFXTableColumnHeader(col);
+        return col.getColumns().isEmpty() ?
+            new JFXTableColumnHeader(getTableViewSkin(), col) :
+            new NestedTableColumnHeader(getTableViewSkin(), col);
     }
+
 
 }

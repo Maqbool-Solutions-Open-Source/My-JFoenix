@@ -19,6 +19,7 @@
 
 package com.jfoenix.svg;
 
+import javafx.css.converter.SizeConverter;
 import javafx.beans.NamedArg;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -28,7 +29,6 @@ import javafx.css.SimpleStyleableDoubleProperty;
 import javafx.css.Styleable;
 import javafx.css.StyleableDoubleProperty;
 import javafx.scene.layout.Background;
-import javafx.css.converter.SizeConverter;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;

@@ -19,12 +19,11 @@
 
 package com.jfoenix.skins;
 
-import com.jfoenix.adapters.ReflectionHelper;
 import com.jfoenix.controls.JFXTextArea;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -60,7 +59,7 @@ public class JFXTextAreaSkin extends TextAreaSkin {
 
         linesWrapper = new PromptLinesWrapper<>(
             textArea,
-            promptTextFillProperty(),
+            super.promptTextFill,
             textArea.textProperty(),
             textArea.promptTextProperty(),
             () -> promptText);
@@ -69,13 +68,27 @@ public class JFXTextAreaSkin extends TextAreaSkin {
         errorContainer = new ValidationPane<>(textArea);
         getChildren().addAll(linesWrapper.line, linesWrapper.focusedLine, linesWrapper.promptContainer, errorContainer);
 
-        registerChangeListener(textArea.disableProperty(), obs -> linesWrapper.updateDisabled());
-        registerChangeListener(textArea.focusColorProperty(), obs -> linesWrapper.updateFocusColor());
-        registerChangeListener(textArea.unFocusColorProperty(), obs -> linesWrapper.updateUnfocusColor());
-        registerChangeListener(textArea.disableAnimationProperty(), obs -> errorContainer.updateClip());
-
+        registerChangeListener(textArea.disableProperty(), "DISABLE_NODE");
+        registerChangeListener(textArea.focusColorProperty(), "FOCUS_COLOR");
+        registerChangeListener(textArea.unFocusColorProperty(), "UNFOCUS_COLOR");
+        registerChangeListener(textArea.disableAnimationProperty(), "DISABLE_ANIMATION");
     }
 
+    @Override
+    protected void handleControlPropertyChanged(String propertyReference) {
+        if ("DISABLE_NODE".equals(propertyReference)) {
+            linesWrapper.updateDisabled();
+        } else if ("FOCUS_COLOR".equals(propertyReference)) {
+            linesWrapper.updateFocusColor();
+        } else if ("UNFOCUS_COLOR".equals(propertyReference)) {
+            linesWrapper.updateUnfocusColor();
+        } else if ("DISABLE_ANIMATION".equals(propertyReference)) {
+            // remove error clip if animation is disabled
+            errorContainer.updateClip();
+        } else {
+            super.handleControlPropertyChanged(propertyReference);
+        }
+    }
 
     @Override
     protected void layoutChildren(final double x, final double y, final double w, final double h) {
@@ -83,8 +96,10 @@ public class JFXTextAreaSkin extends TextAreaSkin {
 
         final double height = getSkinnable().getHeight();
         linesWrapper.layoutLines(x, y, w, h, height, promptText == null ? 0 : promptText.getLayoutBounds().getHeight() + 3);
+        linesWrapper.layoutPrompt(x, y, w, h);
         errorContainer.layoutPane(x, height + linesWrapper.focusedLine.getHeight(), w, h);
         linesWrapper.updateLabelFloatLayout();
+
 
         if (invalid) {
             invalid = false;
@@ -123,14 +138,31 @@ public class JFXTextAreaSkin extends TextAreaSkin {
         }
 
         try {
-            Field field = ReflectionHelper.getField(TextAreaSkin.class, "promptNode");
-            Object oldValue = field.get(this);
-            if (oldValue != null) {
-                removeHighlight(Arrays.asList(((Node) oldValue)));
-            }
-            field.set(this, promptText);
+            reflectionFieldConsumer("promptNode", field -> {
+                Object oldValue = field.get(this);
+                if (oldValue != null) {
+                    removeHighlight(Arrays.asList(((Node) oldValue)));
+                }
+                field.set(this, promptText);
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private <T> void reflectionFieldConsumer(String fieldName, CheckedConsumer<Field> consumer) {
+        Field field = null;
+        try {
+            field = TextAreaSkin.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            consumer.accept(field);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private interface CheckedConsumer<T> {
+        void accept(T t) throws Exception;
+    }
+
 }

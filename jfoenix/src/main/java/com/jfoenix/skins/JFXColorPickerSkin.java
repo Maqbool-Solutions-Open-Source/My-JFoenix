@@ -22,8 +22,11 @@ package com.jfoenix.skins;
 import com.jfoenix.controls.JFXClippedPane;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.behavior.JFXColorPickerBehavior;
 import com.jfoenix.effects.JFXDepthManager;
 import com.jfoenix.utils.JFXNodeUtils;
+import javafx.css.converter.BooleanConverter;
+import com.sun.javafx.scene.control.skin.ComboBoxPopupControl;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -33,13 +36,11 @@ import javafx.css.SimpleStyleableBooleanProperty;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
 import javafx.css.StyleableProperty;
-import javafx.css.converter.BooleanConverter;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.skin.ComboBoxPopupControl;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -54,7 +55,7 @@ import java.util.List;
 /**
  * @author Shadi Shaheen
  */
-public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
+public class JFXColorPickerSkin extends ComboBoxPopupControl<Color> {
 
     private Label displayNode;
     private JFXClippedPane colorBox;
@@ -65,7 +66,7 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
         true);
 
     public JFXColorPickerSkin(final ColorPicker colorPicker) {
-        super(colorPicker);
+        super(colorPicker, new JFXColorPickerBehavior(colorPicker));
 
         // create displayNode
         displayNode = new Label("");
@@ -94,8 +95,7 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
         });
 
         // add listeners
-        registerChangeListener(colorPicker.valueProperty(), obs -> updateColor());
-
+        registerChangeListener(colorPicker.valueProperty(), "VALUE");
         colorLabelVisible.addListener(invalidate -> {
             if (displayNode != null) {
                 if (colorLabelVisible.get()) {
@@ -121,7 +121,7 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
     @Override
     protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
         if (colorBox == null) {
-            reflectUpdateDisplayArea();
+            updateDisplayArea();
         }
         return topInset + colorBox.prefHeight(width) + bottomInset;
     }
@@ -140,8 +140,13 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
     protected Node getPopupContent() {
         if (popupContent == null) {
             popupContent = new JFXColorPalette((JFXColorPicker) getSkinnable());
+            popupContent.setPopupControl(getPopup());
         }
         return popupContent;
+    }
+
+    @Override
+    protected void focusLost() {
     }
 
     @Override
@@ -149,6 +154,22 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
         super.show();
         final ColorPicker colorPicker = (ColorPicker) getSkinnable();
         popupContent.updateSelection(colorPicker.getValue());
+    }
+
+    @Override
+    protected void handleControlPropertyChanged(String p) {
+        super.handleControlPropertyChanged(p);
+        if ("SHOWING".equals(p)) {
+            if (getSkinnable().isShowing()) {
+                show();
+            } else if (!popupContent.isCustomColorDialogShowing()) {
+                hide();
+            }
+        } else if ("VALUE".equals(p)) {
+            // change the selected color
+            updateColor();
+
+        }
     }
 
     @Override
@@ -206,6 +227,14 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
         }
     }
 
+    public void syncWithAutoUpdate() {
+        if (!getPopup().isShowing() && getSkinnable().isShowing()) {
+            // Popup was dismissed. Maybe user clicked outside or typed ESCAPE.
+            // Make sure JFXColorPickerUI button is in sync.
+            getSkinnable().hide();
+        }
+    }
+
     /***************************************************************************
      *                                                                         *
      * Stylesheet Handling   											       *
@@ -255,4 +284,5 @@ public class JFXColorPickerSkin extends JFXGenericPickerSkin<Color> {
     protected javafx.util.StringConverter<Color> getConverter() {
         return null;
     }
+
 }

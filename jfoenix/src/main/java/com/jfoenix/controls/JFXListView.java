@@ -20,13 +20,13 @@
 package com.jfoenix.controls;
 
 import com.jfoenix.skins.JFXListViewSkin;
+import javafx.css.converter.BooleanConverter;
+import javafx.css.converter.SizeConverter;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.*;
-import javafx.css.converter.BooleanConverter;
-import javafx.css.converter.SizeConverter;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.control.Control;

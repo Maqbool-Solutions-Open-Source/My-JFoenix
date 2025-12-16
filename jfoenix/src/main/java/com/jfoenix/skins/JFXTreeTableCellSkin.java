@@ -21,6 +21,7 @@ package com.jfoenix.skins;
 
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import javafx.scene.control.skin.TreeTableCellSkin;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,14 +29,14 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.skin.TreeTableCellSkin;
 
 /**
  * @author Shadi Shaheen
  * @version 1.0
  * @since 2016-03-09
  */
-public class JFXTreeTableCellSkin<S, T> extends TreeTableCellSkin<S, T> {
+public class JFXTreeTableCellSkin<S, T>  extends TreeTableCellSkin<S, T> {
+
     public JFXTreeTableCellSkin(TreeTableCell<S, T> treeTableCell) {
         super(treeTableCell);
     }

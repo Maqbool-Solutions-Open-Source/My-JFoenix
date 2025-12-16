@@ -25,12 +25,12 @@ import com.jfoenix.controls.JFXRippler.RipplerMask;
 import com.jfoenix.transitions.JFXAnimationTimer;
 import com.jfoenix.transitions.JFXKeyFrame;
 import com.jfoenix.transitions.JFXKeyValue;
+import javafx.scene.control.skin.RadioButtonSkin;
 import javafx.animation.Interpolator;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.skin.RadioButtonSkin;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -127,8 +127,8 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
                 }
             }
         });
-
         control.pressedProperty().addListener((o, oldVal, newVal) -> rippler.setOverlayVisible(false));
+
 
         timer = new JFXAnimationTimer(
             new JFXKeyFrame(Duration.millis(200),
@@ -149,25 +149,13 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
                     .build()
             ));
 
-
-        registerChangeListener(control.selectedColorProperty(), obs -> updateColors());
-        registerChangeListener(control.unSelectedColorProperty(), obs -> updateColors());
-        registerChangeListener(control.selectedProperty(), obs -> {
-            boolean isSelected = getSkinnable().isSelected();
-            Color unSelectedColor = ((JFXRadioButton) getSkinnable()).getUnSelectedColor();
-            Color selectedColor = ((JFXRadioButton) getSkinnable()).getSelectedColor();
-            rippler.setRipplerFill(isSelected ? selectedColor : unSelectedColor);
-            if (((JFXRadioButton) getSkinnable()).isDisableAnimation()) {
-                // apply end values
-                timer.applyEndValues();
-            } else {
-                // play selection animation
-                timer.reverseAndContinue();
-            }
-        });
+        registerChangeListener(control.selectedColorProperty(), "SELECTED_COLOR");
+        registerChangeListener(control.unSelectedColorProperty(), "UNSELECTED_COLOR");
+        registerChangeListener(control.selectedProperty(), "SELECTED");
 
         updateColors();
         timer.applyEndValues();
+
     }
 
     @Override
@@ -180,13 +168,38 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
     }
 
     @Override
+    protected void handleControlPropertyChanged(String p) {
+        super.handleControlPropertyChanged(p);
+        if ("SELECTED_COLOR".equals(p)) {
+            // update current colors
+            updateColors();
+        } else if ("UNSELECTED_COLOR".equals(p)) {
+            // update current colors
+            updateColors();
+        } else if ("SELECTED".equals(p)) {
+            // update ripple color
+            boolean isSelected = getSkinnable().isSelected();
+            Color unSelectedColor = ((JFXRadioButton) getSkinnable()).getUnSelectedColor();
+            Color selectedColor = ((JFXRadioButton) getSkinnable()).getSelectedColor();
+            rippler.setRipplerFill(isSelected ? selectedColor : unSelectedColor);
+            if (((JFXRadioButton) getSkinnable()).isDisableAnimation()) {
+                // apply end values
+                timer.applyEndValues();
+            } else {
+                // play selection animation
+                timer.reverseAndContinue();
+            }
+        }
+    }
+
+    @Override
     protected void layoutChildren(final double x, final double y, final double w, final double h) {
         final RadioButton radioButton = getSkinnable();
-        final double contWidth = snapSizeX(container.prefWidth(-1));
-        final double contHeight = snapSizeY(container.prefHeight(-1));
+        final double contWidth = snapSize(container.prefWidth(-1));
+        final double contHeight = snapSize(container.prefHeight(-1));
         final double computeWidth = Math.max(radioButton.prefWidth(-1), radioButton.minWidth(-1));
-        final double width = snapSizeX(contWidth);
-        final double height = snapSizeY(contHeight);
+        final double width = snapSize(contWidth);
+        final double height = snapSize(contHeight);
 
         final double labelWidth = Math.min(computeWidth - contWidth, w - width);
         final double labelHeight = Math.min(radioButton.prefHeight(labelWidth), h);
@@ -212,7 +225,6 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
     }
 
     private void removeRadio() {
-        // TODO: replace with removeIf
         for (int i = 0; i < getChildren().size(); i++) {
             if (getChildren().get(i).getStyleClass().contains("radio")) {
                 getChildren().remove(i);
@@ -235,7 +247,7 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
             topInset,
             rightInset,
             bottomInset,
-            leftInset) + snapSizeX(radio.minWidth(-1)) + padding / 3;
+            leftInset) + snapSize(radio.minWidth(-1)) + padding / 3;
     }
 
     @Override
@@ -244,7 +256,7 @@ public class JFXRadioButtonSkin extends RadioButtonSkin {
             topInset,
             rightInset,
             bottomInset,
-            leftInset) + snapSizeX(radio.prefWidth(-1)) + padding / 3;
+            leftInset) + snapSize(radio.prefWidth(-1)) + padding / 3;
     }
 
     private static double computeXOffset(double width, double contentWidth, HPos hpos) {

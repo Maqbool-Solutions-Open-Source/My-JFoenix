@@ -1,2 +1,2 @@
 rootProject.name = "jfoenix-root"
-include("jfoenix", "demo")
+include("jfoenix", "demo", "demo-gluonfx")
