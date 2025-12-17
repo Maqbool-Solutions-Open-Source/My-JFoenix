@@ -16,9 +16,14 @@ repositories {
 }
 
 javafx {
-    version = "17.0.]17"
+    version = "17.0.17"
     modules = listOf("javafx.controls", "javafx.fxml")
     configuration = "compileOnly"
+}
+
+dependencies {
+    compileOnly("org.openjfx:javafx-controls:17.0.17:sources")
+    compileOnly("org.openjfx:javafx-fxml:17.0.17:sources")
 }
 
 tasks {
