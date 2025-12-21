@@ -23,6 +23,7 @@ module com.jfoenix{
     requires java.logging;
     requires java.xml;
     requires jdk.unsupported;
+    requires javafx.base;
 
     exports com.jfoenix.assets;
     exports com.jfoenix.cache;

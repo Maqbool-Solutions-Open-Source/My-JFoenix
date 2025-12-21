@@ -50,6 +50,7 @@ public class JFXTextField extends TextField implements IFXLabelFloatControl {
      * {@inheritDoc}
      */
     public JFXTextField() {
+        super();
         initialize();
     }
 
@@ -66,6 +67,7 @@ public class JFXTextField extends TextField implements IFXLabelFloatControl {
      */
     @Override
     protected Skin<?> createDefaultSkin() {
+        System.out.println("createDefaultSkin is called!");
         return new JFXTextFieldSkin<>(this);
     }
 

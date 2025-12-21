@@ -21,6 +21,7 @@ package com.jfoenix.skins;
 
 import com.jfoenix.adapters.ReflectionHelper;
 import com.jfoenix.controls.base.IFXLabelFloatControl;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
@@ -55,21 +56,41 @@ public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extend
         super(textField);
         textPane = (Pane) this.getChildren().get(0);
 
+        System.out.println("JFXTextFieldSkin init!!!");
+
+        dumpFields(TextFieldSkin.class);
+
         // get parent fields
         textNode = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textNode");
         textTranslateX = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textTranslateX");
         textRight = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textRight");
 
+        if (textNode == null) {
+            System.err.println("[JFoenix] textNode is NULL on Android");
+        }
+        if (textTranslateX == null) {
+            System.err.println("[JFoenix] textTranslateX is NULL on Android");
+        }
+        if (textRight == null) {
+            System.err.println("[JFoenix] textRight is NULL on Android");
+        }
+
         linesWrapper = new PromptLinesWrapper<T>(
-            textField,
-            promptTextFillProperty(),
-            textField.textProperty(),
-            textField.promptTextProperty(),
-            () -> promptText);
+                textField,
+                promptTextFillProperty(),
+                textField.textProperty(),
+                textField.promptTextProperty(),
+                () -> promptText);
 
         linesWrapper.init(() -> createPromptNode(), textPane);
 
         ReflectionHelper.setFieldContent(TextFieldSkin.class, this, "usePromptText", linesWrapper.usePromptText);
+
+        BooleanBinding usePromptText = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "usePromptText");
+
+        if (usePromptText == null) {
+            System.err.println("[JFoenix] usePromptText is NULL on Android");
+        }
 
         errorContainer = new ValidationPane<>(textField);
 
@@ -156,6 +177,13 @@ public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extend
             field.set(this, promptText);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void dumpFields(Class<?> cls) {
+        System.out.println("---- Fields of " + cls.getName() + " ----");
+        for (Field f : cls.getDeclaredFields()) {
+            System.out.println(f.getName() + " : " + f.getType());
         }
     }
 }

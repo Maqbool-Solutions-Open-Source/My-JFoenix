@@ -23,6 +23,8 @@ javafx {
 
 dependencies {
     compileOnly("org.openjfx:javafx-controls:17.0.17:sources")
+    compileOnly("org.openjfx:javafx-graphics:17.0.17:sources")
+    compileOnly("org.openjfx:javafx-base:17.0.17:sources")
     compileOnly("org.openjfx:javafx-fxml:17.0.17:sources")
 }
 

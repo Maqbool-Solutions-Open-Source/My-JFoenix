@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
  */
 public class ReflectionHelper {
 
-//    private static Unsafe unsafe = null;
+    //    private static Unsafe unsafe = null;
 //    private static long objectFieldOffset;
     private static Method accessible0;
 
@@ -46,13 +46,20 @@ public class ReflectionHelper {
 //            objectFieldOffset = unsafe.objectFieldOffset(overrideField);
             accessible0 = AccessibleObject.class.getDeclaredMethod("setAccessible0", boolean.class);
             accessible0.setAccessible(true);
+            System.out.println("[Reflection] setAccessible0 FOUND");
         } catch (Throwable ex) {
+            System.err.println("[Reflection] setAccessible0 FAILED");
             ex.printStackTrace();
         }
     }
 
-    private static void setAccessible(AccessibleObject obj) throws InvocationTargetException, IllegalAccessException {
-        accessible0.invoke(obj, true);
+    private static void setAccessible(AccessibleObject obj) {
+        try {
+            accessible0.invoke(obj, true);
+        } catch (Throwable ex) {
+            System.err.println("[Reflection] setAccessible FAILED on " + obj);
+            ex.printStackTrace();
+        }
     }
 
     public static <T> T invoke(Class cls, Object obj, String methodName) {
@@ -75,7 +82,9 @@ public class ReflectionHelper {
             setAccessible(method);
             return method;
         } catch (Throwable ex) {
-            throw new InternalError(ex);
+            System.err.println("[Reflection] FAILED method: " + cls.getName() + "." + methodName);
+            ex.printStackTrace();
+            return null;
         }
     }
 
@@ -85,6 +94,8 @@ public class ReflectionHelper {
             setAccessible(field);
             return field;
         } catch (Throwable ex) {
+            System.err.println("[Reflection] FAILED field: " + cls.getName() + "." + fieldName);
+            ex.printStackTrace();
             return null;
         }
     }
@@ -99,6 +110,8 @@ public class ReflectionHelper {
             setAccessible(field);
             return (T) field.get(obj);
         } catch (Throwable ex) {
+            System.err.println("[Reflection] FAILED field: " + cls.getName() + "." + fieldName);
+            ex.printStackTrace();
             return null;
         }
     }
@@ -109,6 +122,8 @@ public class ReflectionHelper {
             setAccessible(field);
             field.set(obj, content);
         } catch (Throwable ex) {
+            System.err.println("[Reflection] FAILED field: " + cls.getName() + "." + fieldName);
+            ex.printStackTrace();
         }
     }
 }
