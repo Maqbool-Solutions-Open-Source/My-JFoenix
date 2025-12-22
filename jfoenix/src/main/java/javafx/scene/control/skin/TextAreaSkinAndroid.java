@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,26 +23,22 @@
  * questions.
  */
 
-package com.jfoenix.android.skins.fx;
+package javafx.scene.control.skin;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.event.EventHandler;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.skin.TextFieldSkin;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Paint;
 
-public class TextFieldSkinAndroid extends TextFieldSkin {
+public class TextAreaSkinAndroid extends TextAreaSkin {
 
     /**************************************************************************
      *
      * Private fields
      *
      **************************************************************************/
-
-    private static final char BULLET = '\u2022';
 
     private final EventHandler<MouseEvent> mouseEventListener = e -> {
         if (getSkinnable().isEditable() && getSkinnable().isFocused()) {
@@ -63,11 +59,10 @@ public class TextFieldSkinAndroid extends TextFieldSkin {
      *
      **************************************************************************/
 
-    public TextFieldSkinAndroid(final TextField textField) {
-        super(textField);
-
-        textField.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventListener);
-        textField.focusedProperty().addListener(weakFocusChangeListener);
+    public TextAreaSkinAndroid(final TextArea textArea) {
+        super(textArea);
+        textArea.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventListener);
+        textArea.focusedProperty().addListener(weakFocusChangeListener);
     }
 
     /***************************************************************************
@@ -75,18 +70,6 @@ public class TextFieldSkinAndroid extends TextFieldSkin {
      * Public API                                                              *
      *                                                                         *
      **************************************************************************/
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected String maskText(String txt) {
-        if (getSkinnable() instanceof PasswordField) {
-            return String.valueOf(BULLET).repeat(txt.length());
-        } else {
-            return super.maskText(txt);
-        }
-    }
 
     /**
      * {@inheritDoc}

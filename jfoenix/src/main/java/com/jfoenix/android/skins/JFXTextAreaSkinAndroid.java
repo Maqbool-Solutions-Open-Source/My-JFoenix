@@ -27,7 +27,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.TextAreaSkin;
-import com.jfoenix.android.skins.fx.TextAreaSkinAndroid;
+import javafx.scene.control.skin.TextAreaSkinAndroid;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;

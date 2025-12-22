@@ -71,7 +71,7 @@ public class JFXTextArea extends TextArea implements IFXLabelFloatControl {
 
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
-        System.out.println("JFXTextArea -> Substrte VM");
+        System.out.println("JFXTextArea -> Substrte VM or Desktop");
         if ("Substrate VM".equals(System.getProperty("java.vm.name").toLowerCase())) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextAreaSkinAndroid\";");
         }

@@ -29,7 +29,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import com.jfoenix.android.skins.fx.TextFieldSkinAndroid;
+import javafx.scene.control.skin.TextFieldSkinAndroid;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
