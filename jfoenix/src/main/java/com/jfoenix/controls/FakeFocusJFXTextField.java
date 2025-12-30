@@ -29,6 +29,11 @@ import javafx.scene.AccessibleAttribute;
  * Created by sshahine on 6/8/2017.
  */
 final class FakeFocusJFXTextField extends JFXTextField {
+
+    public FakeFocusJFXTextField() {
+        System.out.println("FakeFocusJFXTextField() iS called!");
+    }
+
     @Override
     public void requestFocus() {
         if (getParent() != null) {

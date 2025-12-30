@@ -74,7 +74,7 @@ public class JFXTextField extends TextField implements IFXLabelFloatControl {
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
         System.out.println("JFXTextField -> Substrte VM or Desktop");
-        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
+        if ("Linux".equals(System.getProperty("os.name"))) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextFieldSkinAndroid\";");
         }
     }

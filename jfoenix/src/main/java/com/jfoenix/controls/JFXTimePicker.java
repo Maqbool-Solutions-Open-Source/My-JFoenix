@@ -124,7 +124,7 @@ public class JFXTimePicker extends ComboBoxBase<LocalTime> implements IFXValidat
     }
 
     private ObjectProperty<StringConverter<LocalTime>> converter =
-        new SimpleObjectProperty<>(this, "converter", null);
+            new SimpleObjectProperty<>(this, "converter", null);
 
     public final void setConverter(StringConverter<LocalTime> value) {
         converterProperty().set(value);
@@ -140,7 +140,7 @@ public class JFXTimePicker extends ComboBoxBase<LocalTime> implements IFXValidat
     }
 
     private StringConverter<LocalTime> defaultConverter = new LocalTimeStringConverter(FormatStyle.SHORT,
-        Locale.getDefault());
+            Locale.getDefault());
 
     private BooleanProperty _24HourView = new SimpleBooleanProperty(false);
 
@@ -234,9 +234,9 @@ public class JFXTimePicker extends ComboBoxBase<LocalTime> implements IFXValidat
      * the dialog parent manually using the property {{@link #dialogParentProperty()}
      */
     private StyleableBooleanProperty overLay = new SimpleStyleableBooleanProperty(StyleableProperties.OVERLAY,
-        JFXTimePicker.this,
-        "overLay",
-        false);
+            JFXTimePicker.this,
+            "overLay",
+            false);
 
     public final StyleableBooleanProperty overLayProperty() {
         return this.overLay;
@@ -254,10 +254,10 @@ public class JFXTimePicker extends ComboBoxBase<LocalTime> implements IFXValidat
      * the default color used in the data picker content
      */
     private StyleableObjectProperty<Paint> defaultColor = new SimpleStyleableObjectProperty<>(StyleableProperties.DEFAULT_COLOR,
-        JFXTimePicker.this,
-        "defaultColor",
-        Color.valueOf(
-            "#009688"));
+            JFXTimePicker.this,
+            "defaultColor",
+            Color.valueOf(
+                    "#009688"));
 
     public Paint getDefaultColor() {
         return defaultColor == null ? Color.valueOf("#009688") : defaultColor.get();
@@ -273,41 +273,41 @@ public class JFXTimePicker extends ComboBoxBase<LocalTime> implements IFXValidat
 
     private static class StyleableProperties {
         private static final CssMetaData<JFXTimePicker, Paint> DEFAULT_COLOR =
-            new CssMetaData<JFXTimePicker, Paint>("-jfx-default-color",
-                PaintConverter.getInstance(), Color.valueOf("#009688")) {
-                @Override
-                public boolean isSettable(JFXTimePicker control) {
-                    return control.defaultColor == null || !control.defaultColor.isBound();
-                }
+                new CssMetaData<JFXTimePicker, Paint>("-jfx-default-color",
+                        PaintConverter.getInstance(), Color.valueOf("#009688")) {
+                    @Override
+                    public boolean isSettable(JFXTimePicker control) {
+                        return control.defaultColor == null || !control.defaultColor.isBound();
+                    }
 
-                @Override
-                public StyleableProperty<Paint> getStyleableProperty(JFXTimePicker control) {
-                    return control.defaultColorProperty();
-                }
-            };
+                    @Override
+                    public StyleableProperty<Paint> getStyleableProperty(JFXTimePicker control) {
+                        return control.defaultColorProperty();
+                    }
+                };
 
         private static final CssMetaData<JFXTimePicker, Boolean> OVERLAY =
-            new CssMetaData<JFXTimePicker, Boolean>("-jfx-overlay",
-                BooleanConverter.getInstance(), false) {
-                @Override
-                public boolean isSettable(JFXTimePicker control) {
-                    return control.overLay == null || !control.overLay.isBound();
-                }
+                new CssMetaData<JFXTimePicker, Boolean>("-jfx-overlay",
+                        BooleanConverter.getInstance(), false) {
+                    @Override
+                    public boolean isSettable(JFXTimePicker control) {
+                        return control.overLay == null || !control.overLay.isBound();
+                    }
 
-                @Override
-                public StyleableBooleanProperty getStyleableProperty(JFXTimePicker control) {
-                    return control.overLayProperty();
-                }
-            };
+                    @Override
+                    public StyleableBooleanProperty getStyleableProperty(JFXTimePicker control) {
+                        return control.overLayProperty();
+                    }
+                };
 
         private static final List<CssMetaData<? extends Styleable, ?>> CHILD_STYLEABLES;
 
         static {
             final List<CssMetaData<? extends Styleable, ?>> styleables =
-                new ArrayList<>(ComboBoxBase.getClassCssMetaData());
+                    new ArrayList<>(ComboBoxBase.getClassCssMetaData());
             Collections.addAll(styleables,
-                DEFAULT_COLOR,
-                OVERLAY);
+                    DEFAULT_COLOR,
+                    OVERLAY);
             CHILD_STYLEABLES = Collections.unmodifiableList(styleables);
         }
     }

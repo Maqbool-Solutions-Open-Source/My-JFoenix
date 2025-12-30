@@ -63,6 +63,7 @@ public class JFXTextFieldSkinAndroid<T extends JFXTextField & IFXLabelFloatContr
 
     public JFXTextFieldSkinAndroid(T textField) {
         super(textField);
+        System.out.println("JFXTextFieldSkinAndroid() is called!");
         textPane = (Pane) this.getChildren().get(0);
 
         // get parent fields

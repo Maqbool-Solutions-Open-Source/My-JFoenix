@@ -85,7 +85,7 @@ public class JFXDatePickerSkin extends JFXGenericPickerSkin<LocalDate> {
             if (content != null) {
                 LocalDate date = jfxDatePicker.getValue();
                 content.displayedYearMonthProperty().set((date != null) ?
-                    YearMonth.from(date) : YearMonth.now());
+                        YearMonth.from(date) : YearMonth.now());
                 content.updateValues();
             }
             jfxDatePicker.fireEvent(new ActionEvent());
@@ -103,7 +103,7 @@ public class JFXDatePickerSkin extends JFXGenericPickerSkin<LocalDate> {
                     LocalDate date = jfxDatePicker.getValue();
                     // set the current date / now when showing the date picker content
                     content.displayedYearMonthProperty().set((date != null) ?
-                        YearMonth.from(date) : YearMonth.now());
+                            YearMonth.from(date) : YearMonth.now());
                     content.updateValues();
                 }
                 show();
@@ -115,10 +115,9 @@ public class JFXDatePickerSkin extends JFXGenericPickerSkin<LocalDate> {
 
     private void updateArrow(JFXDatePicker datePicker) {
         ((Region) arrowButton.getChildren().get(0)).setBackground(new Background(
-            new BackgroundFill(datePicker.getDefaultColor(), null, null)));
+                new BackgroundFill(datePicker.getDefaultColor(), null, null)));
         ((JFXTextField) getEditor()).setFocusColor(jfxDatePicker.getDefaultColor());
     }
-
 
 
     @Override
