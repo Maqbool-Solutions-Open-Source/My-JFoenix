@@ -50,7 +50,6 @@ public class JFXTextField extends TextField implements IFXLabelFloatControl {
      * {@inheritDoc}
      */
     public JFXTextField() {
-        super();
         initialize();
     }
 
@@ -67,14 +66,13 @@ public class JFXTextField extends TextField implements IFXLabelFloatControl {
      */
     @Override
     protected Skin<?> createDefaultSkin() {
-        System.out.println("createDefaultSkin is called!");
         return new JFXTextFieldSkin<>(this);
     }
 
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
-        System.out.println("JFXTextField -> Substrte VM or Desktop");
-        if ("Linux".equals(System.getProperty("os.name"))) {
+        if ("Substrate VM".equals(System.getProperty("java.vm.name"))
+                && "android".equals(System.getProperty("os.name"))) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextFieldSkinAndroid\";");
         }
     }

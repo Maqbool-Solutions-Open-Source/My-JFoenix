@@ -121,42 +121,15 @@ public abstract class JFXGenericPickerSkin<T> extends ComboBoxPopupControl<T> {
         // handle FakeFocusField cast exception
         try {
             final ReadOnlyBooleanProperty focusedProperty = comboBoxBase.focusedProperty();
-
-            ExpressionHelper value;
-//            if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
-//                value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass().getSuperclass(), focusedProperty, "helper");
-//            } else {
-                value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass(), focusedProperty, "helper");
-//            }
-
-            System.out.println("focusedProperty class = " + focusedProperty.getClass());
-            System.out.println("focusedProperty superclass = " + focusedProperty.getClass().getSuperclass());
-            System.out.println("focusedProperty superclass's superclass = " + focusedProperty.getClass().getSuperclass().getSuperclass());
-            System.out.println("Helper class: " + value.getClass());
-
+            ExpressionHelper value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass(), focusedProperty, "helper");
             ChangeListener[] changeListeners = ReflectionHelper.getFieldContent(value.getClass(), value, "changeListeners");
             // remove parent focus listener to prevent editor class cast exception
             for (int i = changeListeners.length - 1; i > 0; i--) {
-//                if ("Linux".equals(System.getProperty("os.name"))) {
-//                    if (changeListeners[i] != null) {
-//                        System.out.println("changeListeners[" + i + "]" + changeListeners[i].getClass().getSuperclass().getName());
-//                    }
-//
-//                    if (changeListeners[i] != null && changeListeners[i].getClass().getSuperclass().getName().contains("ComboBoxPopupControl")) {
-//                        focusedProperty.removeListener(changeListeners[i]);
-//                        break;
-//                    }
-//                } else {
-                if (changeListeners[i] != null) {
-                    System.out.println("changeListeners[" + i + "]" + changeListeners[i].getClass().getName());
-                }
-
                 if (changeListeners[i] != null && changeListeners[i].getClass().getName().contains("ComboBoxPopupControl")) {
                     focusedProperty.removeListener(changeListeners[i]);
                     break;
                 }
             }
-//        }
         } catch (Exception e) {
             e.printStackTrace();
         }

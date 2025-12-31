@@ -25,13 +25,10 @@ import com.jfoenix.adapters.ReflectionHelper;
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.skins.JFXDatePickerSkin;
 import com.jfoenix.validation.base.ValidatorBase;
-import com.sun.javafx.binding.ExpressionHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.*;
 import javafx.css.converter.BooleanConverter;
@@ -48,8 +45,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * JFXDatePicker is the material design implementation of a date picker.
@@ -64,8 +59,6 @@ public class JFXDatePicker extends DatePicker implements IFXValidatableControl {
      * {@inheritDoc}
      */
     public JFXDatePicker() {
-        super();
-        System.out.println("JFXDatePicker() called");
         initialize();
     }
 
@@ -78,14 +71,9 @@ public class JFXDatePicker extends DatePicker implements IFXValidatableControl {
     }
 
     private void initialize() {
-        System.out.println("JFXDatePicker -> init() called");
-
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
         editorProperty();
-        System.out.println("editorProperty() was called");
-
         ReadOnlyObjectWrapper<TextField> editor = ReflectionHelper.getFieldContent(DatePicker.class, this, "editor");
-
         final FakeFocusJFXTextField editorNode = new FakeFocusJFXTextField();
         this.focusedProperty().addListener((obj, oldVal, newVal) -> {
             if (getEditor() != null) {
@@ -109,10 +97,6 @@ public class JFXDatePicker extends DatePicker implements IFXValidatableControl {
      */
     @Override
     protected Skin<?> createDefaultSkin() {
-        System.out.println("JFXDatePicker -> createDefaultSkin() is called!");
-
-        dumpChangeListeners(this.focusedProperty());
-
         return new JFXDatePickerSkin(this);
     }
 
@@ -279,97 +263,5 @@ public class JFXDatePicker extends DatePicker implements IFXValidatableControl {
     public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
         return StyleableProperties.CHILD_STYLEABLES;
     }
-
-
-    static void dumpChangeListeners(ReadOnlyBooleanProperty prop) {
-        try {
-            Object helper = findHelper(prop);
-
-            System.out.println("c1 = " + prop.getClass());
-            System.out.println("c2 = " + prop.getClass().getSuperclass());
-            System.out.println("c3 = " + prop.getClass().getSuperclass().getSuperclass());
-
-
-            if (helper == null) {
-                System.out.println("No helper found");
-                return;
-            } else {
-                System.out.println("Helper class: " + helper.getClass());
-            }
-
-            if (helper.getClass().getSimpleName().equals("SingleChange")) {
-                ChangeListener<?> l =
-                        ReflectionHelper.getFieldContent(helper.getClass(), helper, "listener");
-
-                System.out.println("=== Single ChangeListener ===");
-                if (l != null) dumpListener(l);
-                return;
-            }
-
-            if (helper.getClass().getSimpleName().equals("Generic")) {
-                ChangeListener<?>[] listeners =
-                        ReflectionHelper.getFieldContent(helper.getClass(), helper, "changeListeners");
-
-                System.out.println("=== Multiple ChangeListeners ===");
-
-                if (listeners != null) {
-                    for (int i = 0; i < listeners.length; i++) {
-                        if (listeners[i] != null) {
-                            System.out.println("[" + i + "]");
-                            dumpListener(listeners[i]);
-                        }
-                    }
-                }
-                return;
-            }
-
-            System.out.println("Unknown helper type");
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
-    static void dumpListener(ChangeListener<?> l) {
-        System.out.println("  Listener class: " + l.getClass().getName());
-
-        var cs = l.getClass().getProtectionDomain().getCodeSource();
-        System.out.println("  CodeSource: " + (cs == null ? "null" : cs.getLocation()));
-
-        // Stack traces are limited in native image – so this is optional
-    }
-
-    static Object findHelper(ReadOnlyBooleanProperty prop) {
-//        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
-//            Class<?> c = prop.getClass().getSuperclass().getSuperclass();
-//            if (c != null) {
-//                return ReflectionHelper.getFieldContent(c, prop, "helper");
-//            }
-//        } else {
-        Class<?> c = prop.getClass().getSuperclass();
-        if (c != null) {
-            return ReflectionHelper.getFieldContent(c, prop, "helper");
-        }
-//        }
-        return null;
-    }
-
-    static void dumpListenerOrigin(ChangeListener<?> l) {
-        try {
-            System.out.println("  -> declared in: "
-                    + l.getClass().getProtectionDomain().getCodeSource());
-
-            for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-                if (ste.getClassName().contains("ComboBox")
-                        || ste.getClassName().contains("DatePicker")
-                        || ste.getClassName().contains("Skin")) {
-                    System.out.println("     " + ste);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
 }

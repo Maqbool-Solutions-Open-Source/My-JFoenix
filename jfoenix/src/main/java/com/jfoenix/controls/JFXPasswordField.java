@@ -63,8 +63,8 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
 
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
-        System.out.println("JFXPasswordField -> Substrte VM or Desktop");
-        if ("Linux".equals(System.getProperty("os.name"))) {
+        if ("Substrate VM".equals(System.getProperty("java.vm.name"))
+                && "android".equals(System.getProperty("os.name"))) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextFieldSkinAndroid\";");
         }
     }
