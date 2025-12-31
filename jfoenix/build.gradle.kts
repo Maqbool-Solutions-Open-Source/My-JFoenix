@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.rationalityfrontline.workaround"
-version = "21.0.0"
+version = "21.0.1"
 val NAME = project.name
 val DESC = "JavaFX Material Design Library"
 val GITHUB_REPO = "RationalityFrontline/JFoenix"
@@ -16,7 +16,7 @@ repositories {
 }
 
 javafx {
-    version = "21.0.2"
+    version = "21.0.10-ea+1"
     modules = listOf("javafx.controls", "javafx.fxml")
     configuration = "compileOnly"
 }
@@ -115,6 +115,6 @@ publishing {
     }
 }
 
-signing {
-    sign(publishing.publications["maven"])
-}
+//signing {
+//    sign(publishing.publications["maven"])
+//}
