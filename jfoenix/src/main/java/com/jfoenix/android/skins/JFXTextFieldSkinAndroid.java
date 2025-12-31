@@ -17,15 +17,19 @@
  * under the License.
  */
 
-package com.jfoenix.skins;
+package com.jfoenix.android.skins;
 
 import com.jfoenix.adapters.ReflectionHelper;
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.base.IFXLabelFloatControl;
-import javafx.beans.binding.BooleanBinding;
+import com.jfoenix.skins.JFXTextFieldSkin;
+import com.jfoenix.skins.PromptLinesWrapper;
+import com.jfoenix.skins.ValidationPane;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.skin.TextFieldSkinAndroid;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -33,13 +37,18 @@ import javafx.scene.text.Text;
 import java.lang.reflect.Field;
 
 /**
- * <h1>Material Design Text input control Skin, used for both JFXTextField/JFXPasswordField</h1>
+ * <h1>Material Design TextField Skin for android</h1>
+ * The JFXTextFieldSkinAndroid implements material design text field for android
+ * when porting JFoenix to android using Substrate
+ * <p>
+ * <b>Note:</b> the implementation is a copy of the original {@link JFXTextFieldSkin}
+ * however it extends the Substrate text field android skin.
  *
  * @author Shadi Shaheen
  * @version 2.0
  * @since 2017-01-25
  */
-public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extends TextFieldSkin {
+public class JFXTextFieldSkinAndroid<T extends JFXTextField & IFXLabelFloatControl> extends TextFieldSkinAndroid {
 
     private boolean invalid = true;
 
@@ -52,28 +61,14 @@ public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extend
     private ValidationPane<T> errorContainer;
     private PromptLinesWrapper<T> linesWrapper;
 
-    public JFXTextFieldSkin(T textField) {
+    public JFXTextFieldSkinAndroid(T textField) {
         super(textField);
         textPane = (Pane) this.getChildren().get(0);
-
-        System.out.println("JFXTextFieldSkin init!!!");
-
-        dumpFields(TextFieldSkin.class);
 
         // get parent fields
         textNode = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textNode");
         textTranslateX = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textTranslateX");
         textRight = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textRight");
-
-        if (textNode == null) {
-            System.err.println("[JFoenix] textNode is NULL on Android");
-        }
-        if (textTranslateX == null) {
-            System.err.println("[JFoenix] textTranslateX is NULL on Android");
-        }
-        if (textRight == null) {
-            System.err.println("[JFoenix] textRight is NULL on Android");
-        }
 
         linesWrapper = new PromptLinesWrapper<T>(
                 textField,
@@ -85,12 +80,6 @@ public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extend
         linesWrapper.init(() -> createPromptNode(), textPane);
 
         ReflectionHelper.setFieldContent(TextFieldSkin.class, this, "usePromptText", linesWrapper.usePromptText);
-
-        BooleanBinding usePromptText = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "usePromptText");
-
-        if (usePromptText == null) {
-            System.err.println("[JFoenix] usePromptText is NULL on Android");
-        }
 
         errorContainer = new ValidationPane<>(textField);
 
@@ -177,13 +166,6 @@ public class JFXTextFieldSkin<T extends TextField & IFXLabelFloatControl> extend
             field.set(this, promptText);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void dumpFields(Class<?> cls) {
-        System.out.println("---- Fields of " + cls.getName() + " ----");
-        for (Field f : cls.getDeclaredFields()) {
-            System.out.println(f.getName() + " : " + f.getType());
         }
     }
 }

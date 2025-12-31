@@ -63,7 +63,8 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
 
     private void initialize() {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
-        if ("dalvik".equals(System.getProperty("java.vm.name").toLowerCase())) {
+        System.out.println("JFXPasswordField -> Substrte VM or Desktop");
+        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
             this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextFieldSkinAndroid\";");
         }
     }
@@ -136,9 +137,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
      * set true to show a float the prompt text when focusing the field
      */
     private StyleableBooleanProperty labelFloat = new SimpleStyleableBooleanProperty(StyleableProperties.LABEL_FLOAT,
-        JFXPasswordField.this,
-        "lableFloat",
-        false);
+            JFXPasswordField.this,
+            "lableFloat",
+            false);
 
     @Override
     public final StyleableBooleanProperty labelFloatProperty() {
@@ -159,11 +160,11 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
      * default color used when the field is unfocused
      */
     private StyleableObjectProperty<Paint> unFocusColor = new SimpleStyleableObjectProperty<>(StyleableProperties.UNFOCUS_COLOR,
-        JFXPasswordField.this,
-        "unFocusColor",
-        Color.rgb(77,
-            77,
-            77));
+            JFXPasswordField.this,
+            "unFocusColor",
+            Color.rgb(77,
+                    77,
+                    77));
 
     @Override
     public Paint getUnFocusColor() {
@@ -184,9 +185,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
      * default color used when the field is focused
      */
     private StyleableObjectProperty<Paint> focusColor = new SimpleStyleableObjectProperty<>(StyleableProperties.FOCUS_COLOR,
-        JFXPasswordField.this,
-        "focusColor",
-        Color.valueOf("#4059A9"));
+            JFXPasswordField.this,
+            "focusColor",
+            Color.valueOf("#4059A9"));
 
     @Override
     public Paint getFocusColor() {
@@ -207,9 +208,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
      * disable animation on validation
      */
     private StyleableBooleanProperty disableAnimation = new SimpleStyleableBooleanProperty(StyleableProperties.DISABLE_ANIMATION,
-        JFXPasswordField.this,
-        "disableAnimation",
-        false);
+            JFXPasswordField.this,
+            "disableAnimation",
+            false);
 
     @Override
     public final StyleableBooleanProperty disableAnimationProperty() {
@@ -229,9 +230,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
 
     private static class StyleableProperties {
         private static final CssMetaData<JFXPasswordField, Paint> UNFOCUS_COLOR = new CssMetaData<JFXPasswordField, Paint>(
-            "-jfx-unfocus-color",
-            PaintConverter.getInstance(),
-            Color.valueOf("#A6A6A6")) {
+                "-jfx-unfocus-color",
+                PaintConverter.getInstance(),
+                Color.valueOf("#A6A6A6")) {
             @Override
             public boolean isSettable(JFXPasswordField control) {
                 return control.unFocusColor == null || !control.unFocusColor.isBound();
@@ -243,9 +244,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
             }
         };
         private static final CssMetaData<JFXPasswordField, Paint> FOCUS_COLOR = new CssMetaData<JFXPasswordField, Paint>(
-            "-jfx-focus-color",
-            PaintConverter.getInstance(),
-            Color.valueOf("#3f51b5")) {
+                "-jfx-focus-color",
+                PaintConverter.getInstance(),
+                Color.valueOf("#3f51b5")) {
             @Override
             public boolean isSettable(JFXPasswordField control) {
                 return control.focusColor == null || !control.focusColor.isBound();
@@ -258,9 +259,9 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
         };
 
         private static final CssMetaData<JFXPasswordField, Boolean> LABEL_FLOAT = new CssMetaData<JFXPasswordField, Boolean>(
-            "-jfx-label-float",
-            BooleanConverter.getInstance(),
-            false) {
+                "-jfx-label-float",
+                BooleanConverter.getInstance(),
+                false) {
             @Override
             public boolean isSettable(JFXPasswordField control) {
                 return control.labelFloat == null || !control.labelFloat.isBound();
@@ -273,25 +274,25 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
         };
 
         private static final CssMetaData<JFXPasswordField, Boolean> DISABLE_ANIMATION =
-            new CssMetaData<JFXPasswordField, Boolean>("-fx-disable-animation",
-                BooleanConverter.getInstance(), false) {
-                @Override
-                public boolean isSettable(JFXPasswordField control) {
-                    return control.disableAnimation == null || !control.disableAnimation.isBound();
-                }
+                new CssMetaData<JFXPasswordField, Boolean>("-fx-disable-animation",
+                        BooleanConverter.getInstance(), false) {
+                    @Override
+                    public boolean isSettable(JFXPasswordField control) {
+                        return control.disableAnimation == null || !control.disableAnimation.isBound();
+                    }
 
-                @Override
-                public StyleableBooleanProperty getStyleableProperty(JFXPasswordField control) {
-                    return control.disableAnimationProperty();
-                }
-            };
+                    @Override
+                    public StyleableBooleanProperty getStyleableProperty(JFXPasswordField control) {
+                        return control.disableAnimationProperty();
+                    }
+                };
 
 
         private static final List<CssMetaData<? extends Styleable, ?>> CHILD_STYLEABLES;
 
         static {
             final List<CssMetaData<? extends Styleable, ?>> styleables = new ArrayList<>(
-                PasswordField.getClassCssMetaData());
+                    PasswordField.getClassCssMetaData());
             Collections.addAll(styleables, UNFOCUS_COLOR, FOCUS_COLOR, LABEL_FLOAT, DISABLE_ANIMATION);
             CHILD_STYLEABLES = Collections.unmodifiableList(styleables);
         }

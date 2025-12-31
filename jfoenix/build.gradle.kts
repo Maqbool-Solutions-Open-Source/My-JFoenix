@@ -21,6 +21,13 @@ javafx {
     configuration = "compileOnly"
 }
 
+dependencies {
+    compileOnly("org.openjfx:javafx-controls:21.0.10-ea+1:sources")
+    compileOnly("org.openjfx:javafx-graphics:21.0.10-ea+1:sources")
+    compileOnly("org.openjfx:javafx-base:21.0.10-ea+1:sources")
+    compileOnly("org.openjfx:javafx-fxml:21.0.10-ea+1:sources")
+}
+
 tasks {
     withType(JavaCompile::class.java) {
         options.release.set(11)
@@ -44,7 +51,8 @@ tasks {
         options {
             this as StandardJavadocDocletOptions
             addStringOption("Xdoclint:none", "-quiet")
-            addMultilineStringsOption("-add-exports").setValue(listOf(
+            addMultilineStringsOption("-add-exports").setValue(
+                listOf(
                 "javafx.base/com.sun.javafx.event=com.jfoenix",
                 "javafx.base/com.sun.javafx.binding=com.jfoenix",
                 "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
@@ -56,7 +64,8 @@ tasks {
                 "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
                 "javafx.controls/com.sun.javafx.scene.control.inputmap=com.jfoenix",
                 "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
-            ))
+                )
+            )
         }
     }
 }

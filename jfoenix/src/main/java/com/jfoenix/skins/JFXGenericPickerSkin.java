@@ -118,18 +118,50 @@ public abstract class JFXGenericPickerSkin<T> extends ComboBoxPopupControl<T>{
     };
 
     private void removeParentFakeFocusListener(ComboBoxBase<T> comboBoxBase) {
-        // handle FakeFocusField cast exception
+        System.out.println("removeParentFakeFocusListener() is called!");
         try {
-            final ReadOnlyBooleanProperty focusedProperty = comboBoxBase.focusedProperty();
-            ExpressionHelper value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass().getSuperclass(), focusedProperty, "helper");
-            ChangeListener[] changeListeners = ReflectionHelper.getFieldContent(value.getClass(), value, "changeListeners");
-            // remove parent focus listener to prevent editor class cast exception
-            for(int i = changeListeners.length - 1; i > 0; i--) {
-                if (changeListeners[i] != null && changeListeners[i].getClass().getName().contains("ComboBoxPopupControl")) {
-                    focusedProperty.removeListener(changeListeners[i]);
-                    break;
+            ReadOnlyBooleanProperty focusedProperty = comboBoxBase.focusedProperty();
+
+            System.out.println("focusedProperty class = " + focusedProperty.getClass());
+            System.out.println("focusedProperty superclass = " + focusedProperty.getClass().getSuperclass());
+            System.out.println("focusedProperty superclass's superclass = " + focusedProperty.getClass().getSuperclass().getSuperclass());
+
+            Class<?> superCls;
+            if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
+                superCls = focusedProperty.getClass().getSuperclass().getSuperclass();
+            } else {
+                superCls = focusedProperty.getClass().getSuperclass();
+                }
+
+            for (var f : superCls.getDeclaredFields()) {
+                System.out.println("FIELD in superclass: " + f.getName());
+            }
+
+            Object helper = ReflectionHelper.getFieldContent(
+                    superCls,
+                    focusedProperty,
+                    "helper"
+            );
+
+            System.out.println("helper object = " + helper);
+            System.out.println("helper class = " + helper.getClass());
+
+            for (var f : helper.getClass().getDeclaredFields()) {
+                System.out.println("FIELD in helper: " + f.getName());
+            }
+
+            ExpressionHelper value = (ExpressionHelper) helper;
+            ChangeListener[] changeListeners =
+                    ReflectionHelper.getFieldContent(value.getClass(), value, "changeListeners");
+
+            System.out.println("Listeners count = " + changeListeners.length);
+
+            for (ChangeListener cl : changeListeners) {
+                if (cl != null) {
+                    System.out.println("Listener = " + cl.getClass().getName());
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
