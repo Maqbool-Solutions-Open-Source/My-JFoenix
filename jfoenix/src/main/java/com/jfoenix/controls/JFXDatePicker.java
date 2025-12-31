@@ -340,17 +340,17 @@ public class JFXDatePicker extends DatePicker implements IFXValidatableControl {
     }
 
     static Object findHelper(ReadOnlyBooleanProperty prop) {
-        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
-            Class<?> c = prop.getClass().getSuperclass().getSuperclass();
-            if (c != null) {
-                return ReflectionHelper.getFieldContent(c, prop, "helper");
-            }
-        } else {
-            Class<?> c = prop.getClass().getSuperclass();
-            if (c != null) {
-                return ReflectionHelper.getFieldContent(c, prop, "helper");
-            }
+//        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
+//            Class<?> c = prop.getClass().getSuperclass().getSuperclass();
+//            if (c != null) {
+//                return ReflectionHelper.getFieldContent(c, prop, "helper");
+//            }
+//        } else {
+        Class<?> c = prop.getClass().getSuperclass();
+        if (c != null) {
+            return ReflectionHelper.getFieldContent(c, prop, "helper");
         }
+//        }
         return null;
     }
 

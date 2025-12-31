@@ -123,11 +123,11 @@ public abstract class JFXGenericPickerSkin<T> extends ComboBoxPopupControl<T> {
             final ReadOnlyBooleanProperty focusedProperty = comboBoxBase.focusedProperty();
 
             ExpressionHelper value;
-            if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
-                value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass().getSuperclass(), focusedProperty, "helper");
-            } else {
+//            if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
+//                value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass().getSuperclass(), focusedProperty, "helper");
+//            } else {
                 value = ReflectionHelper.getFieldContent(focusedProperty.getClass().getSuperclass(), focusedProperty, "helper");
-            }
+//            }
 
             System.out.println("focusedProperty class = " + focusedProperty.getClass());
             System.out.println("focusedProperty superclass = " + focusedProperty.getClass().getSuperclass());
