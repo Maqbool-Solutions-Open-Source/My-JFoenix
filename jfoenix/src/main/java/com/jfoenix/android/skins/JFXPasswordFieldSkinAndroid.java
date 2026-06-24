@@ -1,0 +1,177 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package com.jfoenix.android.skins;
+
+import com.jfoenix.adapters.ReflectionHelper;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.base.IFXLabelFloatControl;
+import com.jfoenix.skins.JFXTextFieldSkin;
+import com.jfoenix.skins.PromptLinesWrapper;
+import com.jfoenix.skins.ValidationPane;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.scene.Node;
+import javafx.scene.control.skin.TextFieldSkin;
+import javafx.scene.control.skin.TextFieldSkinAndroid;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
+
+import java.lang.reflect.Field;
+
+/**
+ * <h1>Material Design PasswordField Skin for Android</h1>
+ * The JFXPasswordFieldSkinAndroid implements material design password field for android
+ * when porting JFoenix to android using Substrate.
+ * <p>
+ * <b>Note:</b> the implementation is a copy of the original {@link JFXTextFieldSkin}
+ * however it extends the Substrate text field android skin.
+ * maskText() is already handled by TextFieldSkinAndroid via PasswordField instanceof check.
+ *
+ * @author Shadi Shaheen
+ * @version 2.0
+ * @since 2017-01-25
+ */
+public class JFXPasswordFieldSkinAndroid<T extends JFXPasswordField & IFXLabelFloatControl>
+        extends TextFieldSkinAndroid {
+
+    private boolean invalid = true;
+
+    private Text promptText;
+    private Pane textPane;
+    private Node textNode;
+    private ObservableDoubleValue textRight;
+    private DoubleProperty textTranslateX;
+
+    private ValidationPane<T> errorContainer;
+    private PromptLinesWrapper<T> linesWrapper;
+
+    public JFXPasswordFieldSkinAndroid(T passwordField) {
+        super(passwordField);
+        System.out.println("JFXPasswordFieldSkinAndroid() is called!");
+        textPane = (Pane) this.getChildren().get(0);
+
+        // get parent fields
+        textNode       = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textNode");
+        textTranslateX = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textTranslateX");
+        textRight      = ReflectionHelper.getFieldContent(TextFieldSkin.class, this, "textRight");
+
+        linesWrapper = new PromptLinesWrapper<T>(
+                passwordField,
+                promptTextFillProperty(),
+                passwordField.textProperty(),
+                passwordField.promptTextProperty(),
+                () -> promptText);
+
+        linesWrapper.init(() -> createPromptNode(), textPane);
+
+        ReflectionHelper.setFieldContent(TextFieldSkin.class, this, "usePromptText", linesWrapper.usePromptText);
+
+        errorContainer = new ValidationPane<>(passwordField);
+
+        getChildren().addAll(
+                linesWrapper.line,
+                linesWrapper.focusedLine,
+                linesWrapper.promptContainer,
+                errorContainer
+        );
+
+        registerChangeListener(passwordField.disableProperty(),          obs -> linesWrapper.updateDisabled());
+        registerChangeListener(passwordField.focusColorProperty(),       obs -> linesWrapper.updateFocusColor());
+        registerChangeListener(passwordField.unFocusColorProperty(),     obs -> linesWrapper.updateUnfocusColor());
+        registerChangeListener(passwordField.disableAnimationProperty(), obs -> errorContainer.updateClip());
+    }
+
+    @Override
+    protected void layoutChildren(final double x, final double y, final double w, final double h) {
+        super.layoutChildren(x, y, w, h);
+
+        final double height = getSkinnable().getHeight();
+        linesWrapper.layoutLines(x, y, w, h, height, Math.floor(h));
+        errorContainer.layoutPane(x, height + linesWrapper.focusedLine.getHeight(), w, h);
+
+        if (getSkinnable().getWidth() > 0) {
+            updateTextPos();
+        }
+
+        linesWrapper.updateLabelFloatLayout();
+
+        if (invalid) {
+            invalid = false;
+            // update validation container
+            errorContainer.invalid(w);
+            // focus
+            linesWrapper.invalid();
+        }
+    }
+
+    private void updateTextPos() {
+        double textWidth = textNode.getLayoutBounds().getWidth();
+        final double promptWidth = promptText == null ? 0 : promptText.getLayoutBounds().getWidth();
+        switch (getSkinnable().getAlignment().getHpos()) {
+            case CENTER:
+                linesWrapper.promptTextScale.setPivotX(promptWidth / 2);
+                double midPoint = textRight.get() / 2;
+                double newX = midPoint - textWidth / 2;
+                if (newX + textWidth <= textRight.get()) {
+                    textTranslateX.set(newX);
+                }
+                break;
+            case LEFT:
+                linesWrapper.promptTextScale.setPivotX(0);
+                break;
+            case RIGHT:
+                linesWrapper.promptTextScale.setPivotX(promptWidth);
+                break;
+        }
+    }
+
+    private void createPromptNode() {
+        if (promptText != null || !linesWrapper.usePromptText.get()) {
+            return;
+        }
+        promptText = new Text();
+        promptText.setManaged(false);
+        promptText.getStyleClass().add("text");
+        promptText.visibleProperty().bind(linesWrapper.usePromptText);
+        promptText.fontProperty().bind(getSkinnable().fontProperty());
+        promptText.textProperty().bind(getSkinnable().promptTextProperty());
+        promptText.fillProperty().bind(linesWrapper.animatedPromptTextFill);
+        promptText.setLayoutX(1);
+        promptText.getTransforms().add(linesWrapper.promptTextScale);
+        linesWrapper.promptContainer.getChildren().add(promptText);
+
+        if (getSkinnable().isFocused() && ((IFXLabelFloatControl) getSkinnable()).isLabelFloat()) {
+            promptText.setTranslateY(-Math.floor(textPane.getHeight()));
+            linesWrapper.promptTextScale.setX(0.85);
+            linesWrapper.promptTextScale.setY(0.85);
+        }
+
+        try {
+            Field field = ReflectionHelper.getField(TextFieldSkin.class, "promptNode");
+            Object oldValue = field.get(this);
+            if (oldValue != null) {
+                textPane.getChildren().remove(oldValue);
+            }
+            field.set(this, promptText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

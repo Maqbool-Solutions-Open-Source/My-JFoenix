@@ -65,7 +65,7 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
         if ("Substrate VM".equals(System.getProperty("java.vm.name"))
                 && "android".equals(System.getProperty("os.name"))) {
-            this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXTextFieldSkinAndroid\";");
+            this.setStyle("-fx-skin: \"com.jfoenix.android.skins.JFXPasswordFieldSkinAndroid\";");
         }
     }
 
@@ -274,7 +274,7 @@ public class JFXPasswordField extends PasswordField implements IFXLabelFloatCont
         };
 
         private static final CssMetaData<JFXPasswordField, Boolean> DISABLE_ANIMATION =
-                new CssMetaData<JFXPasswordField, Boolean>("-fx-disable-animation",
+                new CssMetaData<JFXPasswordField, Boolean>("-jfx-disable-animation",
                         BooleanConverter.getInstance(), false) {
                     @Override
                     public boolean isSettable(JFXPasswordField control) {
